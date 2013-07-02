@@ -23,8 +23,8 @@ describe 'AGRCGeocoder' do
 
       result.should be_an_instance_of(Hash)
       result[:score].should == 100
-      result[:x].should == 40.7666258019694
-      result[:y].should == -111.89091588102185
+      result[:x].should == -111.89091588102185
+      result[:y].should == 40.7666258019694
     end
 
     it 'throws an AGRCGeocoderException with message if there was a problem' do

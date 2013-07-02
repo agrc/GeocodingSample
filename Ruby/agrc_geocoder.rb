@@ -20,8 +20,8 @@ class AGRCGeocoder
     raise AGRCGeocoderException.new(response['message']) if response['status'] != 200
     {
       :score => response['result']['score'],
-      :x => response['result']['location']['y'],
-      :y => response['result']['location']['x']
+      :x => response['result']['location']['x'],
+      :y => response['result']['location']['y']
     }
   end
 end
