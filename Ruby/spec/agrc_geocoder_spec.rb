@@ -32,6 +32,13 @@ describe 'AGRCGeocoder' do
         to_return(:status => 200, :body => '{"status":400,"message":"Invalid API key."}', :headers => {})
       expect { result = @geocoder.locate('123 South Main St', 'SLC') }.to raise_error(AGRCGeocoderException, 'Invalid API key.')
     end
+
+    it 'throws an AGRCGeocoderException if receiving bad status code' do
+      valid_stubbed_response = '{"result":{"location":{"x":-111.89091588102185,"y":40.7666258019694},"score":100.0,"locator":"Centerlines.StatewideRoads","matchAddress":"123 S Main St, Salt Lake City","inputAddress":"123 South Main St, SLC"},"status":200}'
+      stub_request(:get, "http://api.mapserv.utah.gov/api/v1/geocode/123%20South%20Main%20St/SLC?apiKey=abc123").
+        to_return(:status => 400, :body => valid_stubbed_response, :headers => {})
+      expect { result = @geocoder.locate('123 South Main St', 'SLC') }.to raise_error(AGRCGeocoderException, 'Received HTTP status 400')
+    end
   end
 end
 

@@ -16,12 +16,15 @@ class AGRCGeocoder
     uri = URI(URI.encode(sprintf(@api_url, address, zone)))
     uri.query = URI.encode_www_form(params)
 
-    response = JSON.parse(Net::HTTP.get(uri))
-    raise AGRCGeocoderException.new(response['message']) if response['status'] != 200
+    res = Net::HTTP.get_response(uri)
+    raise AGRCGeocoderException.new("Received HTTP status #{res.code}") if res.code.to_i != 200
+
+    obj = JSON.parse(res.body)
+    raise AGRCGeocoderException.new(obj['message']) if obj['status'] != 200
     {
-      :score => response['result']['score'],
-      :x => response['result']['location']['x'],
-      :y => response['result']['location']['y']
+      :score => obj['result']['score'],
+      :x => obj['result']['location']['x'],
+      :y => obj['result']['location']['y']
     }
   end
 end
