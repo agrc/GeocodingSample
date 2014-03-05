@@ -56,7 +56,7 @@ require(['Geocode'], function(Geocode) {
   // Create your api key at
   // https://developer.mapserv.utah.gov/secure/KeyManagement
   var result = Geocode('123 South Main St', 'SLC', 'insert your api key here', {
-    acceptScore: 9,
+    acceptScore: 90,
     spatialReference: 4326
   });
 
