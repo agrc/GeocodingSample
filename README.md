@@ -9,7 +9,7 @@ How to geocode an address in various programming languages.
 - [x] Ruby  
 - [ ] Java  
 - [x] Python  
-- [ ] PHP  
+- [x] PHP  
 - [ ] C  
 - [ ] C++
 - [x] C#  
