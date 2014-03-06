@@ -1,80 +1,85 @@
+<?
+
 /**
  * Access API from http://api.mapserv.utah.gov
- * uses curl library
+ * 
+ * @require cURL
+ * @internal Create your api key at https://developer.mapserv.utah.gov/secure/KeyManagement
  */
-class geocoder {
-	
-	private $apiKey = '';
-	
-	private $apiUrl = 'http://api.mapserv.utah.gov/api/v1/geocode/%s/%s';
-	
-	private $options = array(
-			CURLOPT_RETURNTRANSFER => true, //return the transfer as string instead of writing directly
-			CURLOPT_HTTPHEADER => array('Content-type: application/json'), //specify content type (json)
-			CURLOPT_REFERER => 'http://www.example.com/'	//status 400 "Referrer http header is missing" without this line, but it needs to be the originating website 
-		);
+class Geocoder {
+    private $api_key;
+    private $api_url;
+    private $options;
 
-	/**
-	 *	Class constructor / 
-	 */
-	public function __construct($userApiKey) {
-	
-		$this->apiKey = $userApiKey;	
-	}
-	
-	/**
-	 * curl processes the request as a function so that it can be reused with multiple mapserv api requests
-	 * @param object $options
-	 * @return 
-	 */
-	private function curl ($options){
-	    
-	    $cUrl = curl_init();
-	    curl_setopt_array( $cUrl, $options );
-	    $response = curl_exec( $cUrl );
-	    curl_close( $cUrl );	
-		
-		return $response;	
-	}
-		
-	/**
-	 * locate returns x/y coordinate based on address and zone (and possibly other parameters)
-	 * @param object $address
-	 * @param object $zone
-	 * @param object $parameters [optional]
-	 * @return 
-	 */
-	public function locate ($address, $zone, $parameters = array()){
-						
-		$parameters['apiKey'] = $this->apiKey;
-		
-		$paramArray = array();
-		foreach($parameters as $k => $v){
-			$paramArray[] = $k.'='.$v;
-		}
-		$parameterStr = '?'.implode('&', $paramArray);
-	
-		$url = sprintf($this->apiUrl, rawurlencode($address), rawurlencode($zone) ).$parameterStr;
-		
-		$this->options[CURLOPT_URL] = $url;
-	
-		$response = $this->curl($this->options);
-	
-	    	$decoded = json_decode( $response );
-		
-		if($decoded->status != 200){
-			$decoded->result = 'Error status = '.$decoded->status;
-		}
-		
-		return $decoded->result; 
-	}
-	
+    public function __construct($user_api_key) {
+        if(empty($user_api_key)){
+            throw new InvalidArgumentException("Expecting API key, none received in Geocoder::__construct");
+        }
+
+        $this->api_key = $user_api_key;    
+        $this->api_url = 'http://api.mapserv.utah.gov/api/v1/geocode/%s/%s';
+        $this->options = array(
+            # Return the transfer as string
+            CURLOPT_RETURNTRANSFER => true,
+
+            # Specify content type (json)
+            CURLOPT_HTTPHEADER => array('Content-type: application/json')
+        );
+    }
+
+    /**
+     * Wrap our cURL call in a function.
+     *
+     * @param array $options
+     * @return 
+     */
+    private function curl ($options){
+        $cUrl = curl_init();
+        curl_setopt_array( $cUrl, $options );
+        $response = curl_exec( $cUrl );
+        curl_close( $cUrl );
+        return $response;
+    }
+
+    /**
+     * Locate returns {X, Y} coordinates based on address, zone and any other parameters
+     *
+     * @param string $address
+     * @param string $zone
+     * @param array $parameters [optional]
+     * @return 
+     */
+    public function locate ($address, $zone, $parameters = array()){
+        $paramArray = array();
+        $parameters['api_key'] = $this->api_key;
+
+        foreach($parameters as $k => $v){
+            $paramArray[] = $k . '=' . $v;
+        }
+
+        $this->options[CURLOPT_URL] = sprintf($this->api_url, rawurlencode($address), rawurlencode($zone) ) . 
+                                      '?' . implode('&', $paramArray);
+
+        $response = $this->curl($this->options);
+        $decoded = json_decode( $response );
+
+        if($decoded->status != 200){
+            throw new RuntimeException("Error status: " . $decoded->status, $decoded->status);
+        }
+
+        return $decoded->result; 
+    }
 }
 
-//Usage
+try{
+    $Geocoder = new Geocoder('insert apikey here');
+    $result = $Geocoder->locate('123 South Main Street', 'SLC', array('acceptScore' => 90, 'spatialReference' => 4326));
 
-//generate private apiKey at https://developer.mapserv.utah.gov/secure/KeyManagement
-$geocoder = new geocoder(‘insert your api key here');  
-$result = $geocoder->locate('123 South Main Street', 'SLC', array('acceptScore' => 90, 'spatialReference' => 4326));
-
-echo '<pre>'.print_r($result,1).'</pre>’;
+    echo '<pre>' . print_r($result, 1) . '</pre>';
+} catch(Exception $e){
+    if ($e instanceof InvalidArgumentException OR $e instanceof RuntimeException){
+        die($e->getMessage());
+    } else {
+        die("Caught unrecognized exception: " . $e->getMessage());
+    }
+}
