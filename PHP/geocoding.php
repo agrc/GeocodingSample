@@ -73,7 +73,8 @@ class Geocoder {
 
 try{
     $Geocoder = new Geocoder('enter your desktop key here');
-
+    $result = $Geocoder->locate('123 South Main Street', 'SLC', array('acceptScore' => 90, 'spatialReference' => 4326));
+    
     echo '<pre>' . print_r($result, 1) . '</pre>';
 } catch(Exception $e){
     if ($e instanceof InvalidArgumentException OR $e instanceof RuntimeException){
