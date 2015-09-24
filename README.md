@@ -7,7 +7,7 @@ How to geocode an address in various programming languages.
 
 - [x] JavaScript  
 - [x] Ruby  
-- [ ] Java  
+- [x] Java  
 - [x] Python  
 - [x] PHP  
 - [ ] C  
