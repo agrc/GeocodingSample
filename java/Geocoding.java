@@ -15,7 +15,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String api_key="AGRC-ApiExplorer";
+		String api_key="insert your api key here";
 		String street="123 South Main Street";
 		String zone="SLC";
 		geoCoder(api_key,street, zone);
