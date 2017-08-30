@@ -1,5 +1,4 @@
 # GeocodingSample
-===============
 
 How to geocode an address in various programming languages.
 
