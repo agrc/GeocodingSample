@@ -10,7 +10,7 @@
         Dim acceptScoreThreshold As Integer = 90
         Dim location = g.Locate("123 South Main Street", "SLC", New Dictionary(Of String, Object) From {
                                    {"acceptScore", acceptScoreThreshold},
-                                   {"spatialReference", 4326}
+                                   {"spatialReference", LatLongWgs84}
                                    })
 
         Console.WriteLine(location)
