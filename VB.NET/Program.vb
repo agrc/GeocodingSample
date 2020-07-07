@@ -1,4 +1,4 @@
-﻿Module Program
+Module Program
 
     Sub Main()
         Dim g = new Geocoder("your api key here")

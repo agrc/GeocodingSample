@@ -1,4 +1,4 @@
-﻿Public Class ResultContainer
+Public Class ResultContainer
     Public Property Status As Int32
     Public Property Message As String
     Public Property Result As GeocodeResult

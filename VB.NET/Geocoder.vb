@@ -1,6 +1,7 @@
 Imports System.Net
 Imports System.Net.Http
-Imports System.Web.Script.Serialization
+Imports System.Text.Json
+Imports System.Text.Json.Serialization
 
 Public Class Geocoder
     Private Const UrlTemplate As String = "http://api.mapserv.utah.gov/api/v1/geocode/{{street}}/{{zone}}"
@@ -19,7 +20,7 @@ Public Class Geocoder
 
         options.Add("apikey", _apiKey)
 
-        url += "?" 
+        url += "?"
 
         For Each pair As KeyValuePair(Of String,Object) In options
             url += "&" + String.Concat(Uri.EscapeDataString(pair.Key), "=", Uri.EscapeDataString(pair.Value.ToString()))
@@ -30,9 +31,11 @@ Public Class Geocoder
 
         Dim responseString = response.Content.ReadAsStringAsync().Result
 
-        Dim serializer = New JavaScriptSerializer()
+        Dim serializeOptions = new JsonSerializerOptions()
+        serializeOptions.WriteIndented = true
+        serializeOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase
 
-        Dim resultContainer = serializer.Deserialize (Of ResultContainer)(responseString)
+        Dim resultContainer = JsonSerializer.Deserialize(Of ResultContainer)(responseString, serializeOptions)
 
         If response.StatusCode <> HttpStatusCode.OK Or resultContainer.Status <> HttpStatusCode.OK
             Console.WriteLine("{0} {1} was not found. {2}", street, zone, resultContainer.Message)
