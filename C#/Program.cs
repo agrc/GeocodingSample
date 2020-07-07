@@ -19,7 +19,7 @@ namespace GeocodingSample
             var g = new Geocoding("insert your api key here");
             var location = await g.Locate("123 South Main Street", "SLC", new Dictionary<string, object>
                 {
-                    {"score", 90},
+                    {"acceptScore", 90},
                     {"spatialReference", 4326}
                 });
 
